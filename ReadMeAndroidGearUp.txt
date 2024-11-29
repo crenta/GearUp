@@ -51,9 +51,6 @@ npm install expo-system-ui
 nano ~/.bashrc
 Add the following lines at the end of the file (adjust the path if your SDK is located somewhere else):
 
-
-bash
-Copy code
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 
