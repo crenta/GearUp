@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Modal, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchPage = () => {
   const [selectedMake, setSelectedMake] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [results, setResults] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentPicker, setCurrentPicker] = useState(null);
 
   // Sample data
   const data = {
@@ -29,8 +31,44 @@ const SearchPage = () => {
     },
   };
 
+  const handleSelect = (value) => {
+    switch (currentPicker) {
+      case 'make':
+        setSelectedMake(value);
+        setSelectedModel('');
+        setSelectedCategory('');
+        break;
+      case 'model':
+        setSelectedModel(value);
+        setSelectedCategory('');
+        break;
+      case 'category':
+        setSelectedCategory(value);
+        break;
+    }
+    setModalVisible(false);
+    setResults([]);
+  };
+
+  const showPicker = (pickerType) => {
+    setCurrentPicker(pickerType);
+    setModalVisible(true);
+  };
+
+  const getPickerData = () => {
+    switch (currentPicker) {
+      case 'make':
+        return data.makes;
+      case 'model':
+        return selectedMake ? data.models[selectedMake] : [];
+      case 'category':
+        return selectedModel ? data.categories[selectedModel] : [];
+      default:
+        return [];
+    }
+  };
+
   const handleSearch = () => {
-    // Filter logic: Simulating results based on selections
     if (selectedMake && selectedModel && selectedCategory) {
       setResults([
         `${selectedMake} ${selectedModel} - ${selectedCategory} Part 1`,
@@ -43,125 +81,168 @@ const SearchPage = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Dropdown for Vehicle Make */}
-      <Picker
-        selectedValue={selectedMake}
-        onValueChange={(itemValue) => {
-          setSelectedMake(itemValue);
-          setSelectedModel('');
-          setSelectedCategory('');
-          setResults([]);
-        }}
-        style={styles.picker}
-      >
-        <Picker.Item label="Select Make" value="" />
-        {data.makes.map((make) => (
-          <Picker.Item key={make} label={make} value={make} />
-        ))}
-      </Picker>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <TouchableOpacity
+          style={styles.selectButton}
+          onPress={() => showPicker('make')}
+        >
+          <Text style={styles.selectButtonText}>
+            {selectedMake || 'Select Make'}
+          </Text>
+        </TouchableOpacity>
 
-      {/* Dropdown for Vehicle Model */}
-      <Picker
-        selectedValue={selectedModel}
-        onValueChange={(itemValue) => {
-          setSelectedModel(itemValue);
-          setSelectedCategory('');
-          setResults([]);
-        }}
-        style={styles.picker}
-        enabled={!!selectedMake}
-      >
-        <Picker.Item label="Select Model" value="" />
-        {selectedMake &&
-          data.models[selectedMake].map((model) => (
-            <Picker.Item key={model} label={model} value={model} />
-          ))}
-      </Picker>
+        <TouchableOpacity
+          style={[styles.selectButton, !selectedMake && styles.disabled]}
+          onPress={() => selectedMake && showPicker('model')}
+        >
+          <Text style={styles.selectButtonText}>
+            {selectedModel || 'Select Model'}
+          </Text>
+        </TouchableOpacity>
 
-      {/* Dropdown for Part Category */}
-      <Picker
-        selectedValue={selectedCategory}
-        onValueChange={(itemValue) => {
-          setSelectedCategory(itemValue);
-          setResults([]);
-        }}
-        style={styles.picker}
-        enabled={!!selectedModel}
-      >
-        <Picker.Item label="Select Category" value="" />
-        {selectedModel &&
-          data.categories[selectedModel].map((category) => (
-            <Picker.Item key={category} label={category} value={category} />
-          ))}
-      </Picker>
+        <TouchableOpacity
+          style={[styles.selectButton, !selectedModel && styles.disabled]}
+          onPress={() => selectedModel && showPicker('category')}
+        >
+          <Text style={styles.selectButtonText}>
+            {selectedCategory || 'Select Category'}
+          </Text>
+        </TouchableOpacity>
 
-      {/* Search Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSearch}>
-        <Text style={styles.buttonText}>Search</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.searchButton, (!selectedMake || !selectedModel || !selectedCategory) && styles.disabled]}
+          onPress={handleSearch}
+        >
+          <Text style={styles.buttonText}>Search</Text>
+        </TouchableOpacity>
 
-      {/* Search Results */}
-      <FlatList
-        data={results}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.resultItem}>
-            <Text style={styles.resultText}>{item}</Text>
-          </View>
-        )}
-        ListEmptyComponent={
-          !results.length && (
+        <FlatList
+          data={results}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.resultItem}>
+              <Text style={styles.resultText}>{item}</Text>
+            </View>
+          )}
+          ListEmptyComponent={
             <Text style={styles.noResults}>No results found. Start a search!</Text>
-          )
-        }
-      />
-    </View>
+          }
+        />
+
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <ScrollView>
+                {getPickerData().map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.modalItem}
+                    onPress={() => handleSelect(item)}
+                  >
+                    <Text style={styles.modalItemText}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#2c2c34', // Dark background for the app
+    backgroundColor: '#2c2c34',
   },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#e33d6e', // Pink border for dropdowns
+  content: {
+    padding: 16,
+  },
+  selectButton: {
+    backgroundColor: '#1c1c24',
+    padding: 16,
     borderRadius: 8,
     marginBottom: 12,
-    padding: 12,
-    backgroundColor: '#1c1c24', // Slightly lighter dark background for dropdowns
-    color: '#fff', // White text for dropdown
+    borderWidth: 1,
+    borderColor: '#e33d6e',
   },
-  button: {
-    backgroundColor: '#097cfa', // Blue for the search button
+  selectButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: '#097cfa',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 16,
   },
+  disabled: {
+    opacity: 0.5,
+  },
   buttonText: {
-    color: '#fff', // White text for buttons
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
   resultItem: {
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e33d6e', // Pink underline for results
-    backgroundColor: '#1c1c24', // Slightly lighter dark background for results
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: '#1c1c24',
+    borderWidth: 1,
+    borderColor: '#e33d6e',
   },
   resultText: {
+    color: '#fff',
     fontSize: 16,
-    color: '#fff', // White text for results
   },
   noResults: {
     textAlign: 'center',
-    fontSize: 16,
-    color: '#ccc', // Light gray for empty state text
+    color: '#ccc',
     marginTop: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#2c2c34',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 20,
+    maxHeight: '80%',
+  },
+  modalItem: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1c1c24',
+  },
+  modalItemText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  cancelButton: {
+    marginTop: 10,
+    padding: 16,
+    backgroundColor: '#e33d6e',
+    marginHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
 
