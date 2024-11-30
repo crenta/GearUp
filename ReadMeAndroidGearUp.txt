@@ -157,6 +157,9 @@ npm install @react-native-picker/picker
 npx expo install react-native-maps
 npx expo install expo-image-picker
 npx expo install expo-file-system
+npx expo install expo-image-picker expo-location
 
+npx expo prebuild
+npx expo run:android
 
 
