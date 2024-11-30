@@ -1,152 +1,193 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import GoogleMapReact from 'google-map-react';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, ScrollView, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Simple marker component
-const Marker = ({ text }) => (
-  <div style={{
-    color: 'white',
-    background: '#e33d6e', // Pink for markers
-    padding: '8px 12px',
-    borderRadius: '4px',
-    display: 'inline-flex',
-    textAlign: 'center',
-    alignItems: 'center',
-    transform: 'translate(-50%, -50%)',
-  }}>
-    📍 {text}
-  </div>
-);
-
-export default function App() {
+const MapPage = () => {
   const [selectedType, setSelectedType] = useState('gas');
 
-  // Updated location data for Baton Rouge
   const locations = {
     gas: [
-      { id: 1, title: 'Chevron - Perkins Rd', lat: 30.403489, lng: -91.117144 },
-      { id: 2, title: 'Shell - College Dr', lat: 30.418294, lng: -91.138300 },
-      { id: 3, title: 'Exxon - Government St', lat: 30.448376, lng: -91.155542 },
-      { id: 4, title: 'Circle K - Highland Rd', lat: 30.378403, lng: -91.098564 },
-      { id: 5, title: 'RaceTrac - Siegen Ln', lat: 30.389812, lng: -91.066735 },
-      { id: 6, title: 'Murphy USA - Airline Hwy', lat: 30.452639, lng: -91.072915 },
+      { id: 1, title: 'Chevron - Perkins Rd', coordinate: { latitude: 30.403489, longitude: -91.117144 } },
+      { id: 2, title: 'Shell - College Dr', coordinate: { latitude: 30.418294, longitude: -91.138300 } },
+      { id: 3, title: 'Exxon - Government St', coordinate: { latitude: 30.448376, longitude: -91.155542 } },
+      { id: 4, title: 'Circle K - Highland Rd', coordinate: { latitude: 30.378403, longitude: -91.098564 } },
+      { id: 5, title: 'RaceTrac - Siegen Ln', coordinate: { latitude: 30.389812, longitude: -91.066735 } },
+      { id: 6, title: 'Murphy USA - Airline Hwy', coordinate: { latitude: 30.452639, longitude: -91.072915 } },
     ],
     oil: [
-      { id: 7, title: 'Jiffy Lube - Siegen Ln', lat: 30.383482, lng: -91.059389 },
-      { id: 8, title: 'Take 5 Oil Change - Perkins Rd', lat: 30.397799, lng: -91.105167 },
-      { id: 9, title: 'Valvoline Instant Oil Change - Burbank Dr', lat: 30.351024, lng: -91.141325 },
-      { id: 10, title: 'Goodyear Auto Service - Florida Blvd', lat: 30.450872, lng: -91.103972 },
-      { id: 11, title: 'Express Oil Change - Bluebonnet Blvd', lat: 30.383123, lng: -91.091817 },
+      { id: 7, title: 'Jiffy Lube - Siegen Ln', coordinate: { latitude: 30.383482, longitude: -91.059389 } },
+      { id: 8, title: 'Take 5 Oil Change - Perkins Rd', coordinate: { latitude: 30.397799, longitude: -91.105167 } },
+      { id: 9, title: 'Valvoline Instant Oil Change - Burbank Dr', coordinate: { latitude: 30.351024, longitude: -91.141325 } },
+      { id: 10, title: 'Goodyear Auto Service - Florida Blvd', coordinate: { latitude: 30.450872, longitude: -91.103972 } },
+      { id: 11, title: 'Express Oil Change - Bluebonnet Blvd', coordinate: { latitude: 30.383123, longitude: -91.091817 } },
     ],
     repair: [
-      { id: 12, title: 'Firestone Complete Auto Care', lat: 30.405567, lng: -91.082465 },
-      { id: 13, title: 'Pep Boys - Baton Rouge', lat: 30.416662, lng: -91.138885 },
-      { id: 14, title: 'Meineke Car Care Center', lat: 30.407654, lng: -91.097091 },
-      { id: 15, title: 'Christian Brothers Automotive - Highland', lat: 30.374852, lng: -91.105651 },
-      { id: 16, title: 'Midas - Baton Rouge', lat: 30.443522, lng: -91.128414 },
-      { id: 17, title: 'Goodyear Auto Service - Sherwood Forest Blvd', lat: 30.446373, lng: -91.050482 },
+      { id: 12, title: 'Firestone Complete Auto Care', coordinate: { latitude: 30.405567, longitude: -91.082465 } },
+      { id: 13, title: 'Pep Boys - Baton Rouge', coordinate: { latitude: 30.416662, longitude: -91.138885 } },
+      { id: 14, title: 'Meineke Car Care Center', coordinate: { latitude: 30.407654, longitude: -91.097091 } },
+      { id: 15, title: 'Christian Brothers Automotive - Highland', coordinate: { latitude: 30.374852, longitude: -91.105651 } },
+      { id: 16, title: 'Midas - Baton Rouge', coordinate: { latitude: 30.443522, longitude: -91.128414 } },
+      { id: 17, title: 'Goodyear Auto Service - Sherwood Forest Blvd', coordinate: { latitude: 30.446373, longitude: -91.050482 } },
     ],
     painting: [
-      { id: 18, title: 'Maaco Auto Body Shop & Painting', lat: 30.429073, lng: -91.055647 },
-      { id: 19, title: 'Earl Scheib Paint & Body', lat: 30.446893, lng: -91.093778 },
-      { id: 20, title: 'Body Kreations', lat: 30.405320, lng: -91.098765 },
-      { id: 21, title: 'Xtreme Auto Collision & Paint', lat: 30.387982, lng: -91.072317 },
+      { id: 18, title: 'Maaco Auto Body Shop & Painting', coordinate: { latitude: 30.429073, longitude: -91.055647 } },
+      { id: 19, title: 'Earl Scheib Paint & Body', coordinate: { latitude: 30.446893, longitude: -91.093778 } },
+      { id: 20, title: 'Body Kreations', coordinate: { latitude: 30.405320, longitude: -91.098765 } },
+      { id: 21, title: 'Xtreme Auto Collision & Paint', coordinate: { latitude: 30.387982, longitude: -91.072317 } },
     ],
   };
 
-  // Map default settings
-  const mapProps = {
-    center: {
-      lat: 30.4515,
-      lng: -91.1871, // Baton Rouge coordinates
-    },
-    zoom: 12,
+  // Convert lat/long to relative position on the map image
+  const getPosition = (coordinate) => {
+    const mapBounds = {
+      minLat: 30.351024, // southernmost point
+      maxLat: 30.452639, // northernmost point
+      minLng: -91.155542, // westernmost point
+      maxLng: -91.050482, // easternmost point
+    };
+
+    const x = ((coordinate.longitude - mapBounds.minLng) / (mapBounds.maxLng - mapBounds.minLng)) * 100;
+    const y = ((mapBounds.maxLat - coordinate.latitude) / (mapBounds.maxLat - mapBounds.minLat)) * 100;
+
+    return { x, y };
   };
 
   return (
-    <View style={styles.container}>
-      <div style={{ height: '100vh', width: '100%' }}>
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: '' }} // Add your Google Maps API key here
-          defaultCenter={mapProps.center}
-          defaultZoom={mapProps.zoom}
-        >
-          {locations[selectedType].map(location => (
-            <Marker
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={styles.mapContainer}>
+        <Image
+          source={require('./assets/baton-rouge-map.png')}
+          style={styles.map}
+          resizeMode="cover"
+        />
+
+        {/* Location Pins */}
+        {locations[selectedType].map((location) => {
+          const position = getPosition(location.coordinate);
+          return (
+            <TouchableOpacity
               key={location.id}
-              lat={location.lat}
-              lng={location.lng}
-              text={location.title}
-            />
-          ))}
-        </GoogleMapReact>
-      </div>
+              style={[
+                styles.pin,
+                {
+                  left: `${position.x}%`,
+                  top: `${position.y}%`,
+                }
+              ]}
+              onPress={() => alert(location.title)}
+            >
+              <Text style={styles.pinText}>📍</Text>
+              <View style={styles.pinLabel}>
+                <Text style={styles.pinLabelText}>{location.title}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'gas' && styles.selected]}
-          onPress={() => setSelectedType('gas')}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.buttonContainer}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.buttonText}>Gas Stations</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, selectedType === 'gas' && styles.selected]}
+            onPress={() => setSelectedType('gas')}
+          >
+            <Text style={styles.buttonText}>Gas Stations</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'oil' && styles.selected]}
-          onPress={() => setSelectedType('oil')}
-        >
-          <Text style={styles.buttonText}>Oil Change</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, selectedType === 'oil' && styles.selected]}
+            onPress={() => setSelectedType('oil')}
+          >
+            <Text style={styles.buttonText}>Oil Change</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'repair' && styles.selected]}
-          onPress={() => setSelectedType('repair')}
-        >
-          <Text style={styles.buttonText}>Repair Shops</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, selectedType === 'repair' && styles.selected]}
+            onPress={() => setSelectedType('repair')}
+          >
+            <Text style={styles.buttonText}>Repair Shops</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'painting' && styles.selected]}
-          onPress={() => setSelectedType('painting')}
-        >
-          <Text style={styles.buttonText}>Painting Shops</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, selectedType === 'painting' && styles.selected]}
+            onPress={() => setSelectedType('painting')}
+          >
+            <Text style={styles.buttonText}>Painting Shops</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
-    </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#2c2c34',
+  },
+  mapContainer: {
+    flex: 1,
     position: 'relative',
-    backgroundColor: '#2c2c34', // Dark gray background for the app
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height - 150,
+  },
+  pin: {
+    position: 'absolute',
+    transform: [{ translateX: -15 }, { translateY: -30 }],
+    zIndex: 1,
+  },
+  pinText: {
+    fontSize: 30,
+  },
+  pinLabel: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 4,
+    borderRadius: 4,
+    width: 120,
+    top: -30,
+    left: -45,
+  },
+  pinLabelText: {
+    color: '#fff',
+    fontSize: 12,
+    textAlign: 'center',
   },
   buttonContainer: {
     position: 'absolute',
     bottom: 20,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 16,
-    backgroundColor: '#1c1c24', // Slightly lighter dark gray for button background
-    zIndex: 1,
+    backgroundColor: '#1c1c24',
+    paddingVertical: 10,
+  },
+  scrollContent: {
+    paddingHorizontal: 10,
   },
   button: {
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 5,
-    backgroundColor: '#1c1c24', // Dark background for buttons
+    backgroundColor: '#1c1c24',
     borderWidth: 1,
-    borderColor: '#e33d6e', // Pink border for buttons
+    borderColor: '#e33d6e',
+    marginHorizontal: 4,
     minWidth: 100,
-    alignItems: 'center',
   },
   selected: {
-    backgroundColor: '#e33d6e', // Pink for selected button
+    backgroundColor: '#e33d6e',
   },
   buttonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff', // White text for buttons
+    color: '#fff',
+    textAlign: 'center',
   },
 });
+
+export default MapPage;
