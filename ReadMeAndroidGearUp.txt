@@ -154,9 +154,9 @@ source ~/.bashrc
 npx expo run:android
 npm install @react-native-picker/picker
 
-expo install react-native-maps
-expo install expo-image-picker
-expo install expo-file-system
+npx expo install react-native-maps
+npx expo install expo-image-picker
+npx expo install expo-file-system
 
 
 
