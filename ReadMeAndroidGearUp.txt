@@ -162,6 +162,3 @@ npx expo install expo-image-picker expo-location
 npx expo prebuild
 npx expo run:android
 
-npx expo install react-native-maps-osmdroid
-
-
