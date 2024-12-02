@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MapPage from './MapPage';
 import SearchPage from './SearchPage';
 import MyCarPage from './MyCarPage';
-import SharePage from './SharePage';
+import SettingsPage from './SettingsPage';  // Changed from SharePage
 import { Text } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -24,20 +24,6 @@ export default function App() {
         })}
       >
         <Tab.Screen
-          name="My Cars"
-          component={MyCarPage}
-          options={{
-            tabBarLabel: 'My Cars',
-          }}
-        />
-        <Tab.Screen
-          name="Share"
-          component={SharePage}
-          options={{
-            tabBarLabel: 'Share',
-          }}
-        />
-        <Tab.Screen
           name="Map"
           component={MapPage}
           options={{
@@ -49,6 +35,20 @@ export default function App() {
           component={SearchPage}
           options={{
             tabBarLabel: 'Search',
+          }}
+        />
+        <Tab.Screen
+          name="My Cars"
+          component={MyCarPage}
+          options={{
+            tabBarLabel: 'My Cars',
+          }}
+        />
+        <Tab.Screen
+          name="Settings"  // Changed from "Share"
+          component={SettingsPage}  // Changed from SharePage
+          options={{
+            tabBarLabel: 'Settings',  // Changed from "Share"
           }}
         />
       </Tab.Navigator>
