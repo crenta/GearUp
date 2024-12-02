@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 const MapPage = () => {
   const [selectedType, setSelectedType] = useState('gas');
+  const [mapRef, setMapRef] = useState(null);
 
   const locations = {
     gas: [
@@ -37,50 +39,42 @@ const MapPage = () => {
     ],
   };
 
-  const getPosition = (coordinate) => {
-    const mapBounds = {
-      minLat: 30.351024,
-      maxLat: 30.452639,
-      minLng: -91.155542,
-      maxLng: -91.050482,
-    };
+const initialRegion = {
+  latitude: 30.403489,
+  longitude: -91.117144,
+  latitudeDelta: 0.2,      // Increased from 0.0922
+  longitudeDelta: 0.2,     // Increased from 0.0421
+};
 
-    const x = ((coordinate.longitude - mapBounds.minLng) / (mapBounds.maxLng - mapBounds.minLng)) * 100;
-    const y = ((mapBounds.maxLat - coordinate.latitude) / (mapBounds.maxLat - mapBounds.minLat)) * 100;
-
-    return { x, y };
+  const handleResetMap = () => {
+    if (mapRef) {
+      mapRef.animateToRegion(initialRegion, 1000);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.mapContainer}>
-        <Image
-          source={require('./assets/baton-rouge-map.png')}
+        <MapView
+          ref={(ref) => setMapRef(ref)}
+          provider={PROVIDER_GOOGLE}
           style={styles.map}
-          resizeMode="cover"
-        />
-
-        {locations[selectedType].map((location) => {
-          const position = getPosition(location.coordinate);
-          return (
-            <TouchableOpacity
+          initialRegion={initialRegion}
+          showsUserLocation={true}
+          zoomEnabled={true}
+          minZoomLevel={12}
+          maxZoomLevel={20}
+          zoomControlEnabled={true}
+        >
+          {locations[selectedType].map((location) => (
+            <Marker
               key={location.id}
-              style={[
-                styles.pin,
-                {
-                  left: `${position.x}%`,
-                  top: `${position.y}%`,
-                }
-              ]}
+              coordinate={location.coordinate}
+              title={location.title}
               onPress={() => alert(location.title)}
-            >
-              <Text style={styles.pinText}>📍</Text>
-              <View style={styles.pinLabel}>
-                <Text style={styles.pinLabelText}>{location.title}</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+            />
+          ))}
+        </MapView>
 
         <View style={styles.buttonContainer}>
           <ScrollView
@@ -115,6 +109,10 @@ const MapPage = () => {
             >
               <Text style={styles.buttonText}>Paint</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={handleResetMap}>
+              <Text style={styles.buttonText}>Reset</Text>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </View>
@@ -132,30 +130,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height - 150,
-  },
-  pin: {
     position: 'absolute',
-    transform: [{ translateX: -15 }, { translateY: -30 }],
-    zIndex: 1,
-  },
-  pinText: {
-    fontSize: 30,
-  },
-  pinLabel: {
-    position: 'absolute',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 4,
-    borderRadius: 4,
-    width: 120,
-    top: -30,
-    left: -45,
-  },
-  pinLabelText: {
-    color: '#fff',
-    fontSize: 12,
-    textAlign: 'center',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   buttonContainer: {
     position: 'absolute',
@@ -180,6 +159,9 @@ const styles = StyleSheet.create({
     borderColor: '#e33d6e',
     marginHorizontal: 2,
     minWidth: 70,
+  },
+  resetButton: {
+    backgroundColor: '#e33d6e',
   },
   selected: {
     backgroundColor: '#e33d6e',
