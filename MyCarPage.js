@@ -1,10 +1,29 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Image, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const MyCarPage = () => {
   const [vehicles, setVehicles] = useState([
-    { id: '1', year: '2020', make: 'Toyota', model: 'Camry', image: null, miles: '15000' },
+    {
+      id: '1',
+      year: '2020',
+      make: 'Toyota',
+      model: 'Camry',
+      image: null,
+      miles: '15000',
+      licensePlate: 'ABC123',
+      lastOilChange: '2024-01-15',
+      nextOilChange: '2024-04-15',
+      insurance: {
+        provider: 'State Farm',
+        policyNumber: 'POL123456',
+        expiryDate: '2024-12-31'
+      },
+      lastInspection: '2023-12-01',
+      nextInspection: '2024-12-01',
+      vinNumber: '1HGCM82633A123456',
+      registrationExpiry: '2024-10-15',
+    },
   ]);
   const [selectedVehicle, setSelectedVehicle] = useState(vehicles[0]);
   const [editing, setEditing] = useState(false);
@@ -32,6 +51,18 @@ const MyCarPage = () => {
       model: '',
       image: null,
       miles: '',
+      licensePlate: '',
+      lastOilChange: '',
+      nextOilChange: '',
+      insurance: {
+        provider: '',
+        policyNumber: '',
+        expiryDate: ''
+      },
+      lastInspection: '',
+      nextInspection: '',
+      vinNumber: '',
+      registrationExpiry: '',
     };
     setVehicles([...vehicles, newVehicle]);
     setSelectedVehicle(newVehicle);
@@ -47,131 +78,45 @@ const MyCarPage = () => {
         quality: 0.8,
       },
       (response) => {
-        if (response.didCancel) {
-          console.log('User canceled image picker');
-        } else if (response.errorCode) {
-          console.log('ImagePicker Error:', response.errorMessage);
-        } else if (response.assets && response.assets.length > 0) {
-          const selectedImage = response.assets[0].uri;
-
-          // Update the selected vehicle
-          const updatedVehicle = { ...selectedVehicle, image: selectedImage };
+        if (!response.didCancel && !response.errorCode && response.assets?.length > 0) {
+          const updatedVehicle = { ...selectedVehicle, image: response.assets[0].uri };
           setSelectedVehicle(updatedVehicle);
-
-          // Update the vehicles array
-          setVehicles((prevVehicles) =>
-            prevVehicles.map((v) =>
-              v.id === updatedVehicle.id ? updatedVehicle : v
-            )
+          setVehicles(prevVehicles =>
+            prevVehicles.map(v => v.id === updatedVehicle.id ? updatedVehicle : v)
           );
         }
       }
     );
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Vehicle Information */}
-      {editing ? (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Year"
-            placeholderTextColor="#ccc"
-            value={selectedVehicle.year}
-            onChangeText={(text) =>
-              setSelectedVehicle({ ...selectedVehicle, year: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Make"
-            placeholderTextColor="#ccc"
-            value={selectedVehicle.make}
-            onChangeText={(text) =>
-              setSelectedVehicle({ ...selectedVehicle, make: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Model"
-            placeholderTextColor="#ccc"
-            value={selectedVehicle.model}
-            onChangeText={(text) =>
-              setSelectedVehicle({ ...selectedVehicle, model: text })
-            }
-          />
-        </View>
+  const InfoField = ({ label, value, editable, onChangeText, placeholder }) => (
+    <View style={styles.infoField}>
+      <Text style={styles.label}>{label}:</Text>
+      {editing && editable ? (
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder || label}
+          placeholderTextColor="#ccc"
+          value={value}
+          onChangeText={onChangeText}
+        />
       ) : (
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>
-            {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
-          </Text>
-        </View>
+        <Text style={styles.infoText}>{value || 'Not set'}</Text>
       )}
+    </View>
+  );
 
-      {/* Vehicle Image */}
-      <Image
-        source={
-          selectedVehicle.image
-            ? { uri: selectedVehicle.image }
-            : require('./assets/car.png') // Fallback placeholder
-        }
-        style={styles.carImage}
-      />
-
-      {/* Upload Button */}
-      <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
-        <Text style={styles.buttonText}>Upload Image</Text>
-      </TouchableOpacity>
-
-      {/* Miles */}
-      <View style={styles.milesContainer}>
-        <Text style={styles.label}>Miles:</Text>
-        {editing ? (
-          <TextInput
-            style={styles.input}
-            placeholder="Miles"
-            placeholderTextColor="#ccc"
-            value={selectedVehicle.miles}
-            keyboardType="numeric"
-            onChangeText={(text) =>
-              setSelectedVehicle({ ...selectedVehicle, miles: text })
-            }
-          />
-        ) : (
-          <Text style={styles.infoText}>{selectedVehicle.miles} miles</Text>
-        )}
-      </View>
-
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        {editing ? (
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.buttonText}>Edit</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity style={styles.addButton} onPress={handleAddVehicle}>
-          <Text style={styles.buttonText}>Add New Vehicle</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* List of Vehicles */}
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Vehicle List at Top */}
       <FlatList
         data={vehicles}
         keyExtractor={(item) => item.id}
         horizontal
+        style={styles.vehicleList}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={[
-              styles.vehicleItem,
-              item.id === selectedVehicle.id && styles.selectedVehicle,
-            ]}
+            style={[styles.vehicleItem, item.id === selectedVehicle.id && styles.selectedVehicle]}
             onPress={() => {
               setSelectedVehicle(item);
               setEditing(false);
@@ -182,113 +127,248 @@ const MyCarPage = () => {
                 {item.year} {item.make} {item.model}
               </Text>
               <Image
-                source={
-                  item.image
-                    ? { uri: item.image }
-                    : require('./assets/car.png')
-                }
+                source={item.image ? { uri: item.image } : require('./assets/car.png')}
                 style={styles.vehicleThumbnail}
               />
             </View>
           </TouchableOpacity>
         )}
       />
-    </View>
+
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollContent}>
+        {/* Basic Info Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Vehicle Information</Text>
+          <InfoField
+            label="Year"
+            value={selectedVehicle.year}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, year: text })}
+          />
+          <InfoField
+            label="Make"
+            value={selectedVehicle.make}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, make: text })}
+          />
+          <InfoField
+            label="Model"
+            value={selectedVehicle.model}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, model: text })}
+          />
+          <InfoField
+            label="License Plate"
+            value={selectedVehicle.licensePlate}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, licensePlate: text })}
+          />
+          <InfoField
+            label="VIN Number"
+            value={selectedVehicle.vinNumber}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, vinNumber: text })}
+          />
+        </View>
+
+        {/* Vehicle Image Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Vehicle Image</Text>
+          <Image
+            source={selectedVehicle.image ? { uri: selectedVehicle.image } : require('./assets/car.png')}
+            style={styles.carImage}
+          />
+          <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
+            <Text style={styles.buttonText}>Upload Image</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Maintenance Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Maintenance Information</Text>
+          <InfoField
+            label="Current Mileage"
+            value={selectedVehicle.miles}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, miles: text })}
+          />
+          <InfoField
+            label="Last Oil Change"
+            value={selectedVehicle.lastOilChange}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, lastOilChange: text })}
+          />
+          <InfoField
+            label="Next Oil Change Due"
+            value={selectedVehicle.nextOilChange}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, nextOilChange: text })}
+          />
+          <InfoField
+            label="Last Inspection"
+            value={selectedVehicle.lastInspection}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, lastInspection: text })}
+          />
+          <InfoField
+            label="Next Inspection Due"
+            value={selectedVehicle.nextInspection}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({ ...selectedVehicle, nextInspection: text })}
+          />
+        </View>
+
+        {/* Insurance Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Insurance Information</Text>
+          <InfoField
+            label="Insurance Provider"
+            value={selectedVehicle.insurance.provider}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({
+              ...selectedVehicle,
+              insurance: { ...selectedVehicle.insurance, provider: text }
+            })}
+          />
+          <InfoField
+            label="Policy Number"
+            value={selectedVehicle.insurance.policyNumber}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({
+              ...selectedVehicle,
+              insurance: { ...selectedVehicle.insurance, policyNumber: text }
+            })}
+          />
+          <InfoField
+            label="Policy Expiry"
+            value={selectedVehicle.insurance.expiryDate}
+            editable={true}
+            onChangeText={(text) => setSelectedVehicle({
+              ...selectedVehicle,
+              insurance: { ...selectedVehicle.insurance, expiryDate: text }
+            })}
+          />
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          {editing ? (
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <Text style={styles.buttonText}>Save Changes</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+              <Text style={styles.buttonText}>Edit Information</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.addButton} onPress={handleAddVehicle}>
+            <Text style={styles.buttonText}>Add New Vehicle</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#2c2c34', // Dark gray background
+    backgroundColor: '#2c2c34',
   },
-  inputContainer: {
-    marginBottom: 20,
+  scrollContent: {
+    flex: 1,
+    padding: 16,
+  },
+  vehicleList: {
+    maxHeight: 120,
+    backgroundColor: '#1c1c24',
+    padding: 8,
+  },
+  section: {
+    marginBottom: 24,
+    backgroundColor: '#1c1c24',
+    borderRadius: 12,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 16,
+  },
+  infoField: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 14,
+    color: '#ccc',
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e33d6e', // Pink border for inputs
+    borderColor: '#e33d6e',
     borderRadius: 8,
     padding: 12,
-    marginBottom: 12,
-    backgroundColor: '#1c1c24', // Darker input background
-    color: '#fff', // White text
-  },
-  infoContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: '#2c2c34',
+    color: '#fff',
   },
   infoText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff', // White text
+    fontSize: 16,
+    color: '#fff',
+    padding: 12,
+    backgroundColor: '#2c2c34',
+    borderRadius: 8,
   },
   carImage: {
     width: '100%',
     height: 200,
     resizeMode: 'contain',
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'column',
+    gap: 12,
+    marginBottom: 32,
   },
   uploadButton: {
     backgroundColor: '#e33d6e',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
   },
   editButton: {
     backgroundColor: '#e33d6e',
     padding: 12,
     borderRadius: 8,
-    flex: 1,
-    marginRight: 10,
   },
   saveButton: {
     backgroundColor: '#097cfa',
     padding: 12,
     borderRadius: 8,
-    flex: 1,
-    marginRight: 10,
   },
   addButton: {
     backgroundColor: '#097cfa',
     padding: 12,
     borderRadius: 8,
-    flex: 1,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  milesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginRight: 8,
-    color: '#fff',
-  },
   vehicleItem: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#097cfa', // Blue border for list items
+    borderColor: '#097cfa',
     borderRadius: 8,
     marginHorizontal: 8,
-    backgroundColor: '#1c1c24', // Slightly lighter dark gray
+    backgroundColor: '#1c1c24',
     alignItems: 'center',
     width: 120,
   },
   selectedVehicle: {
-    borderColor: '#e33d6e', // Pink border for selected vehicle
+    borderColor: '#e33d6e',
     backgroundColor: '#2c2c34',
   },
   vehicleContent: {
@@ -297,7 +377,7 @@ const styles = StyleSheet.create({
   vehicleText: {
     fontSize: 12,
     textAlign: 'center',
-    color: '#fff', // White text
+    color: '#fff',
     marginBottom: 8,
   },
   vehicleThumbnail: {
