@@ -37,13 +37,12 @@ const MapPage = () => {
     ],
   };
 
-  // Convert lat/long to relative position on the map image
   const getPosition = (coordinate) => {
     const mapBounds = {
-      minLat: 30.351024, // southernmost point
-      maxLat: 30.452639, // northernmost point
-      minLng: -91.155542, // westernmost point
-      maxLng: -91.050482, // easternmost point
+      minLat: 30.351024,
+      maxLat: 30.452639,
+      minLng: -91.155542,
+      maxLng: -91.050482,
     };
 
     const x = ((coordinate.longitude - mapBounds.minLng) / (mapBounds.maxLng - mapBounds.minLng)) * 100;
@@ -61,7 +60,6 @@ const MapPage = () => {
           resizeMode="cover"
         />
 
-        {/* Location Pins */}
         {locations[selectedType].map((location) => {
           const position = getPosition(location.coordinate);
           return (
@@ -84,40 +82,41 @@ const MapPage = () => {
           );
         })}
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.buttonContainer}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <TouchableOpacity
-            style={[styles.button, selectedType === 'gas' && styles.selected]}
-            onPress={() => setSelectedType('gas')}
+        <View style={styles.buttonContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
           >
-            <Text style={styles.buttonText}>Gas Stations</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, selectedType === 'gas' && styles.selected]}
+              onPress={() => setSelectedType('gas')}
+            >
+              <Text style={styles.buttonText}>Gas</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, selectedType === 'oil' && styles.selected]}
-            onPress={() => setSelectedType('oil')}
-          >
-            <Text style={styles.buttonText}>Oil Change</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, selectedType === 'oil' && styles.selected]}
+              onPress={() => setSelectedType('oil')}
+            >
+              <Text style={styles.buttonText}>Oil</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, selectedType === 'repair' && styles.selected]}
-            onPress={() => setSelectedType('repair')}
-          >
-            <Text style={styles.buttonText}>Repair Shops</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, selectedType === 'repair' && styles.selected]}
+              onPress={() => setSelectedType('repair')}
+            >
+              <Text style={styles.buttonText}>Repair</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, selectedType === 'painting' && styles.selected]}
-            onPress={() => setSelectedType('painting')}
-          >
-            <Text style={styles.buttonText}>Painting Shops</Text>
-          </TouchableOpacity>
-        </ScrollView>
+            <TouchableOpacity
+              style={[styles.button, selectedType === 'painting' && styles.selected]}
+              onPress={() => setSelectedType('painting')}
+            >
+              <Text style={styles.buttonText}>Paint</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -165,25 +164,28 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#1c1c24',
     paddingVertical: 10,
+    height: 65,
   },
   scrollContent: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   button: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 5,
     backgroundColor: '#1c1c24',
     borderWidth: 1,
     borderColor: '#e33d6e',
-    marginHorizontal: 4,
-    minWidth: 100,
+    marginHorizontal: 2,
+    minWidth: 70,
   },
   selected: {
     backgroundColor: '#e33d6e',
   },
   buttonText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
