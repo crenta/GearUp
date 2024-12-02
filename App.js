@@ -21,6 +21,18 @@ export default function App() {
           ),
           tabBarActiveTintColor: '#007AFF',
           tabBarInactiveTintColor: 'gray',
+          // Added these styles for dark header
+          headerStyle: {
+            backgroundColor: '#2c2c34',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          tabBarStyle: {
+            backgroundColor: '#2c2c34',
+            borderTopColor: '#1c1c24',
+          }
         })}
       >
         <Tab.Screen
