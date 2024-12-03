@@ -42,8 +42,8 @@ const MapPage = () => {
 const initialRegion = {
   latitude: 30.403489,
   longitude: -91.117144,
-  latitudeDelta: 0.2,      // Increased from 0.0922
-  longitudeDelta: 0.2,     // Increased from 0.0421
+  latitudeDelta: 0.2,
+  longitudeDelta: 0.2,
 };
 
   const handleResetMap = () => {
