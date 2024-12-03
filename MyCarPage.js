@@ -1,8 +1,10 @@
+// Import necessary dependencies from React and React Native
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const MyCarPage = () => {
+  // Initialize state for vehicles with default vehicle data
   const [vehicles, setVehicles] = useState([
     {
       id: '1',
@@ -25,13 +27,16 @@ const MyCarPage = () => {
       registrationExpiry: '2024-10-15',
     },
   ]);
+  // State for currently selected vehicle and editing mode
   const [selectedVehicle, setSelectedVehicle] = useState(vehicles[0]);
   const [editing, setEditing] = useState(false);
 
+  // Handler for entering edit mode
   const handleEdit = () => {
     setEditing(true);
   };
 
+  // Handler for saving changes to a vehicle
   const handleSave = () => {
     setVehicles((prevVehicles) =>
       prevVehicles.map((v) =>
@@ -43,6 +48,7 @@ const MyCarPage = () => {
     setEditing(false);
   };
 
+  // Handler for adding a new vehicle with empty default values
   const handleAddVehicle = () => {
     const newVehicle = {
       id: (vehicles.length + 1).toString(),
@@ -69,6 +75,7 @@ const MyCarPage = () => {
     setEditing(true);
   };
 
+  // Handler for picking and uploading vehicle images
   const handleImagePick = () => {
     launchImageLibrary(
       {
@@ -89,6 +96,7 @@ const MyCarPage = () => {
     );
   };
 
+  // Reusable component for displaying/editing vehicle information fields
   const InfoField = ({ label, value, editable, onChangeText, placeholder }) => (
     <View style={styles.infoField}>
       <Text style={styles.label}>{label}:</Text>
@@ -108,7 +116,7 @@ const MyCarPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Vehicle List at Top */}
+      {/* Horizontal scrollable list of vehicles at the top */}
       <FlatList
         data={vehicles}
         keyExtractor={(item) => item.id}
@@ -135,9 +143,9 @@ const MyCarPage = () => {
         )}
       />
 
-      {/* Scrollable Content */}
+      {/* Main scrollable content area */}
       <ScrollView style={styles.scrollContent}>
-        {/* Basic Info Section */}
+        {/* Basic vehicle information section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Vehicle Information</Text>
           <InfoField
@@ -172,7 +180,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Vehicle Image Section */}
+        {/* Vehicle image upload section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Vehicle Image</Text>
           <Image
@@ -184,7 +192,7 @@ const MyCarPage = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Maintenance Section */}
+        {/* Maintenance information section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Maintenance Information</Text>
           <InfoField
@@ -219,7 +227,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Insurance Section */}
+        {/* Insurance details section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Insurance Information</Text>
           <InfoField
@@ -251,7 +259,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Action Buttons */}
+        {/* Action buttons section */}
         <View style={styles.buttonContainer}>
           {editing ? (
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -271,10 +279,11 @@ const MyCarPage = () => {
   );
 };
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2c2c34',
+    backgroundColor: '#2c2c34',  // Dark theme background
   },
   scrollContent: {
     flex: 1,
@@ -282,12 +291,12 @@ const styles = StyleSheet.create({
   },
   vehicleList: {
     maxHeight: 120,
-    backgroundColor: '#1c1c24',
+    backgroundColor: '#1c1c24',  // Darker background for vehicle list
     padding: 8,
   },
   section: {
     marginBottom: 24,
-    backgroundColor: '#1c1c24',
+    backgroundColor: '#1c1c24',  // Dark background for sections
     borderRadius: 12,
     padding: 16,
   },
@@ -307,7 +316,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e33d6e',
+    borderColor: '#e33d6e',  // Pink accent color for inputs
     borderRadius: 8,
     padding: 12,
     backgroundColor: '#2c2c34',
@@ -332,23 +341,23 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   uploadButton: {
-    backgroundColor: '#e33d6e',
+    backgroundColor: '#e33d6e',  // Pink accent for upload button
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: '#e33d6e',
+    backgroundColor: '#e33d6e',  // Pink accent for edit button
     padding: 12,
     borderRadius: 8,
   },
   saveButton: {
-    backgroundColor: '#097cfa',
+    backgroundColor: '#097cfa',  // Blue accent for save button
     padding: 12,
     borderRadius: 8,
   },
   addButton: {
-    backgroundColor: '#097cfa',
+    backgroundColor: '#097cfa',  // Blue accent for add button
     padding: 12,
     borderRadius: 8,
   },
@@ -360,7 +369,7 @@ const styles = StyleSheet.create({
   vehicleItem: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#097cfa',
+    borderColor: '#097cfa',  // Blue border for unselected vehicles
     borderRadius: 8,
     marginHorizontal: 8,
     backgroundColor: '#1c1c24',
@@ -368,7 +377,7 @@ const styles = StyleSheet.create({
     width: 120,
   },
   selectedVehicle: {
-    borderColor: '#e33d6e',
+    borderColor: '#e33d6e',  // Pink border for selected vehicle
     backgroundColor: '#2c2c34',
   },
   vehicleContent: {
