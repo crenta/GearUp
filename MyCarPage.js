@@ -1,10 +1,9 @@
-// Import necessary dependencies from React and React Native
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const MyCarPage = () => {
-  // Initialize state for vehicles with default vehicle data
+  // Initialize default vehicle data
   const [vehicles, setVehicles] = useState([
     {
       id: '1',
@@ -27,16 +26,16 @@ const MyCarPage = () => {
       registrationExpiry: '2024-10-15',
     },
   ]);
-  // State for currently selected vehicle and editing mode
+  // currently selected vehicle
   const [selectedVehicle, setSelectedVehicle] = useState(vehicles[0]);
   const [editing, setEditing] = useState(false);
 
-  // Handler for entering edit mode
+  // handler for entering edit mode
   const handleEdit = () => {
     setEditing(true);
   };
 
-  // Handler for saving changes to a vehicle
+  // handler for saving changes to a vehicle
   const handleSave = () => {
     setVehicles((prevVehicles) =>
       prevVehicles.map((v) =>
@@ -48,7 +47,7 @@ const MyCarPage = () => {
     setEditing(false);
   };
 
-  // Handler for adding a new vehicle with empty default values
+  // handler for adding a new vehicle
   const handleAddVehicle = () => {
     const newVehicle = {
       id: (vehicles.length + 1).toString(),
@@ -75,7 +74,7 @@ const MyCarPage = () => {
     setEditing(true);
   };
 
-  // Handler for picking and uploading vehicle images
+  // handler for picking and uploading vehicle images
   const handleImagePick = () => {
     launchImageLibrary(
       {
@@ -96,7 +95,7 @@ const MyCarPage = () => {
     );
   };
 
-  // Reusable component for displaying/editing vehicle information fields
+  // displaying/editing vehicle information fields
   const InfoField = ({ label, value, editable, onChangeText, placeholder }) => (
     <View style={styles.infoField}>
       <Text style={styles.label}>{label}:</Text>
@@ -116,7 +115,7 @@ const MyCarPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Horizontal scrollable list of vehicles at the top */}
+      {}
       <FlatList
         data={vehicles}
         keyExtractor={(item) => item.id}
@@ -143,9 +142,9 @@ const MyCarPage = () => {
         )}
       />
 
-      {/* Main scrollable content area */}
+      {/* Main content area */}
       <ScrollView style={styles.scrollContent}>
-        {/* Basic vehicle information section */}
+        {/* Basic vehicle information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Vehicle Information</Text>
           <InfoField
@@ -180,7 +179,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Vehicle image upload section */}
+        {/* Vehicle image upload */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Vehicle Image</Text>
           <Image
@@ -192,7 +191,7 @@ const MyCarPage = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Maintenance information section */}
+        {/* Maintenance information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Maintenance Information</Text>
           <InfoField
@@ -227,7 +226,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Insurance details section */}
+        {/* Insurance details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Insurance Information</Text>
           <InfoField
@@ -259,7 +258,7 @@ const MyCarPage = () => {
           />
         </View>
 
-        {/* Action buttons section */}
+        {/* Action buttons */}
         <View style={styles.buttonContainer}>
           {editing ? (
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -279,11 +278,11 @@ const MyCarPage = () => {
   );
 };
 
-// Styles for the component
+// styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2c2c34',  // Dark theme background
+    backgroundColor: '#2c2c34',
   },
   scrollContent: {
     flex: 1,
@@ -291,12 +290,12 @@ const styles = StyleSheet.create({
   },
   vehicleList: {
     maxHeight: 120,
-    backgroundColor: '#1c1c24',  // Darker background for vehicle list
+    backgroundColor: '#1c1c24',
     padding: 8,
   },
   section: {
     marginBottom: 24,
-    backgroundColor: '#1c1c24',  // Dark background for sections
+    backgroundColor: '#1c1c24',
     borderRadius: 12,
     padding: 16,
   },
@@ -316,7 +315,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e33d6e',  // Pink accent color for inputs
+    borderColor: '#e33d6e',
     borderRadius: 8,
     padding: 12,
     backgroundColor: '#2c2c34',
@@ -341,23 +340,23 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   uploadButton: {
-    backgroundColor: '#e33d6e',  // Pink accent for upload button
+    backgroundColor: '#e33d6e',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: '#e33d6e',  // Pink accent for edit button
+    backgroundColor: '#e33d6e',
     padding: 12,
     borderRadius: 8,
   },
   saveButton: {
-    backgroundColor: '#097cfa',  // Blue accent for save button
+    backgroundColor: '#097cfa',
     padding: 12,
     borderRadius: 8,
   },
   addButton: {
-    backgroundColor: '#097cfa',  // Blue accent for add button
+    backgroundColor: '#097cfa',
     padding: 12,
     borderRadius: 8,
   },
@@ -369,7 +368,7 @@ const styles = StyleSheet.create({
   vehicleItem: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#097cfa',  // Blue border for unselected vehicles
+    borderColor: '#097cfa',
     borderRadius: 8,
     marginHorizontal: 8,
     backgroundColor: '#1c1c24',
@@ -377,7 +376,7 @@ const styles = StyleSheet.create({
     width: 120,
   },
   selectedVehicle: {
-    borderColor: '#e33d6e',  // Pink border for selected vehicle
+    borderColor: '#e33d6e',
     backgroundColor: '#2c2c34',
   },
   vehicleContent: {
