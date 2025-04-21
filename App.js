@@ -1,61 +1,57 @@
-// Import required dependencies from React and React Navigation
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// Import individual page components
 import MapPage from './MapPage';
 import SearchPage from './SearchPage';
 import MyCarPage from './MyCarPage';
 import SettingsPage from './SettingsPage';
 import { Text } from 'react-native';
 
-// Create a bottom tab navigator instance
+// bottom tab navigator
 const Tab = createBottomTabNavigator();
 
-// Main App component that sets up the navigation structure
+// Main App
 export default function App() {
   return (
     // NavigationContainer
     <NavigationContainer>
-      {/* Tab.Navigator configures the bottom tab bar */}
+      {/* Tab Navigator */}
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          // Custom tab bar icon - uses filled circle for active tab and empty circle for inactive
           tabBarIcon: ({ focused, color, size }) => (
             <Text style={{ color, fontSize: size }}>
               {focused ? '⬤' : '○'}
             </Text>
           ),
-          // Color configuration for active and inactive tabs
-          tabBarActiveTintColor: '#007AFF',    // iOS blue color for active tab
-          tabBarInactiveTintColor: 'gray',     // Gray color for inactive tabs
+          // Color configuration
+          tabBarActiveTintColor: '#007AFF',
+          tabBarInactiveTintColor: 'gray',
           
-          // Dark theme styling for the header
           headerStyle: {
-            backgroundColor: '#2c2c34',        // Dark background for header
+            backgroundColor: '#2c2c34',
           },
-          headerTintColor: '#fff',             // White text color for header
+          headerTintColor: '#fff',
           headerTitleStyle: {
-            fontWeight: 'bold',                // Bold header title
+            fontWeight: 'bold',
           },
-          // Dark theme styling for the tab bar
+          
           tabBarStyle: {
-            backgroundColor: '#2c2c34',        // Dark background for tab bar
-            borderTopColor: '#1c1c24',         // Darker border color for tab bar top
+            backgroundColor: '#2c2c34',
+            borderTopColor: '#1c1c24',
           }
         })}
       >
-        {/* Define each tab screen with its component and label */}
+        {/* each tab screen */}
         <Tab.Screen
-          name="Map"                           // Navigation identifier for the Map screen
-          component={MapPage}                  // Component to render for Map tab
+          name="Map"
+          component={MapPage}
           options={{
-            tabBarLabel: 'Map',               // Label shown in the tab bar
+            tabBarLabel: 'Map',
           }}
         />
         
-        {/* Search tab configuration */}
+        {/* Search tab */}
         <Tab.Screen
           name="Search"
           component={SearchPage}
@@ -64,7 +60,7 @@ export default function App() {
           }}
         />
         
-        {/* My Cars tab configuration */}
+        {/* My Cars tab */}
         <Tab.Screen
           name="My Cars"
           component={MyCarPage}
@@ -73,7 +69,7 @@ export default function App() {
           }}
         />
         
-        {/* Settings tab configuration */}
+        {/* Settings tab */}
         <Tab.Screen
           name="Settings"  
           component={SettingsPage}  
